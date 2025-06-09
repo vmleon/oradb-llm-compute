@@ -1,53 +1,11 @@
 # Oracle DB with LLM on Compute
 
-## Local deployment
+TODO: Add general description.
 
-```bash
-cd container
-```
+## Oracle Cloud Deployment
 
-```bash
-podman build -t ollama .
-```
+WIP
 
-```bash
-cd ..
-```
+## Local Deployment
 
-```bash
-podman run -d \
-    --rm --name ollama \
-    -v ollama-data:/home/ollama/.ollama \
-    -p 11434:11434 \
-    localhost/ollama
-```
-
-```bash
-podman exec ollama ollama run llama3.2:3b
-```
-
-```bash
-curl http://localhost:11434/
-```
-
-```bash
-curl http://localhost:11434/api/generate -d '{"model":"llama3.2:3b","prompt":"Hello"}'
-```
-
-## Client
-
-```bash
-python -m venv venv
-```
-
-```bash
-source ./venv/bin/activate
-```
-
-```bash
-pip install -r requirements.txt
-```
-
-```bash
-python client.py
-```
+Follow the steps in [LOCAL.md](./LOCAL.md)
