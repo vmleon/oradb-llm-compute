@@ -1,0 +1,26 @@
+FROM ubuntu:22.04
+
+# ENV NVIDIA_VISIBLE_DEVICES=all
+
+# Install curl and basic tools
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
+# Install Ollama
+RUN curl -fsSL https://ollama.com/install.sh | sh
+
+# Create non-root user
+RUN useradd -m -s /bin/bash ollama
+
+# Switch to ollama user
+USER ollama
+WORKDIR /home/ollama
+
+# Expose port
+EXPOSE 11434
+
+# Set environment to bind to all interfaces
+ENV OLLAMA_HOST=0.0.0.0
+
+# Start Ollama
+# --gpus all
+CMD ["ollama", "serve"]
