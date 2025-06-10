@@ -1,8 +1,8 @@
 resource "oci_core_virtual_network" "vcn" {
   compartment_id = var.compartment_ocid
   cidr_blocks    = ["10.0.0.0/16"]
-  display_name   = "VCN ${local.project_name} ${local.deploy_id}"
-  dns_label      = "vcn${local.project_name}${local.deploy_id}"
+  display_name   = "${local.project_name} ${local.deploy_id}"
+  dns_label      = "${local.project_name}${local.deploy_id}"
 }
 
 resource "oci_core_service_gateway" "service_gateway" {

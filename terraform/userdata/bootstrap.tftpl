@@ -29,10 +29,16 @@ systemctl start ollama
 
 # Pull a default model
 echo "ollama pull" >> /home/opc/bootstrap.lock
-ollama pull llama3.2:7b
+ollama pull llama3.2:3b
 
 # Pre-load the model into memory for faster responses
 echo "ollama model pre-load" >> /home/opc/bootstrap.lock
 ollama run llama3.2 ""
+
+# Disable firewalld
+echo "firewalld stop" >> /home/opc/bootstrap.lock
+systemctl stop firewalld
+echo "firewalld disable" >> /home/opc/bootstrap.lock
+systemctl disable firewalld
 
 rm /home/opc/bootstrap.lock

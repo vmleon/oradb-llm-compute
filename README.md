@@ -63,6 +63,20 @@ terraform apply -auto-approve tfplan
 cd ..
 ```
 
+## Running the Client
+
+```bash
+cd client
+```
+
+```bash
+source ./venv/bin/activate
+```
+
+```bash
+python client.py -u "http://PUBLIC_IP:11434/"
+```
+
 ## Clean Up
 
 ```bash
