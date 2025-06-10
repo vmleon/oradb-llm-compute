@@ -6,7 +6,7 @@ from ollama import Client
 def main():
     parser = argparse.ArgumentParser(description='Chat with Ollama models')
     parser.add_argument('-u', '--url', default='http://localhost:11434', help='Ollama server URL')
-    parser.add_argument('-c', '--content', default='In Oracle Database, give me a query that return the system date', help='Chat message content')
+    parser.add_argument('-c', '--content', default='In Oracle Database, give me the query that return the system date. No comments, just the code', help='Chat message content')
     parser.add_argument('-m', '--model', default='llama3.2:3b', help='Model name to use')
     args = parser.parse_args()
 
