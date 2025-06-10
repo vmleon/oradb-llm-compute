@@ -3,11 +3,11 @@
 ## Ollama server
 
 ```bash
-mkdir ./ollama-data
+mkdir -p ./ollama-data
 ```
 
 ```bash
-cd container
+cd ollama
 ```
 
 ```bash

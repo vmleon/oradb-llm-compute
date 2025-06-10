@@ -1,3 +1,8 @@
+ollama-data/
+config.json
+
+.DS_Store
+
 ### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -203,7 +208,7 @@ override.tf.json
 # !example_override.tf
 
 # Include tfplan files to ignore the plan output of command: terraform plan -out=tfplan
-# example: *tfplan*
+tfplan
 
 # Ignore CLI configuration files
 .terraformrc
