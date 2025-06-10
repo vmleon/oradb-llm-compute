@@ -3,6 +3,7 @@
 import sys
 import json
 import chevron
+import oci
 import subprocess
 import configparser
 import logging
@@ -21,6 +22,25 @@ logging.basicConfig(
     format='%(levelname)s: %(message)s'
 )
 
+def get_compartment_id_by_name(config, compartment_name, parent_compartment_id=None):
+    """Find compartment OCID by name"""
+    identity_client = oci.identity.IdentityClient(config)
+    
+    # Use tenancy root if no parent specified
+    if parent_compartment_id is None:
+        parent_compartment_id = config['tenancy']
+    
+    compartments = identity_client.list_compartments(
+        compartment_id=parent_compartment_id,
+        compartment_id_in_subtree=True  # Search recursively
+    ).data
+    
+    for compartment in compartments:
+        if compartment.name == compartment_name:
+            return compartment.id
+    
+    return None
+
 def read_oci_config():
     """Read OCI config file and return profiles"""
     oci_config_path = Path(OCI_CONFIG_FILE).expanduser()
@@ -38,8 +58,8 @@ def read_oci_config():
 def select_profile():
     """Let user select OCI profile and return profile data"""
     config = read_oci_config()
-    profiles = list(config.sections())
-    
+    profiles = ['DEFAULT'] + list(config.sections())
+
     # If only DEFAULT exists, use it automatically
     if len(profiles) == 1 and profiles[0] == 'DEFAULT':
         logging.info("Using profile: DEFAULT")
@@ -121,7 +141,15 @@ def setup():
     logging.info(f"Using region: {region_name}")
     logging.info(f"Using tenancy: {tenancy_id}")
     
-    compartment_id = input("Compartment OCID: ")
+    compartment_name = input("Compartment name: ")
+    if ' ' in compartment_name:
+        logging.error("Compartment name cannot contain spaces")
+        sys.exit(1)
+    oci_config = oci.config.from_file(profile_name=profile_name)
+    compartment_id = get_compartment_id_by_name(oci_config, compartment_name)
+    if not compartment_id:
+        logging.error(f"Compartment '{compartment_name}' not found")
+        sys.exit(1)
     
     # Create SSH key
     ssh_private_key_path, ssh_public_key = create_ssh_key()
@@ -191,23 +219,23 @@ def cleanup():
         tfplan_path.unlink()
         logging.info(f"Removed {TFPLAN_FILE}")
     else:
-        logging.warning(f"{CONFIG_FILE} not found")
-    
-    # Remove tfplan file
-    tfplan_path = Path(TFPLAN_FILE)
-    if tfplan_path.exists():
-        tfplan_path.unlink()
-        logging.info(f"Removed {TFPLAN_FILE}")
-    else:
         logging.warning(f"{TFPLAN_FILE} not found")
     
     # Remove tfvars file
-    config_path = Path(TFVARS_OUTPUT)
-    if config_path.exists():
-        config_path.unlink()
+    tfplan_path = Path(TFVARS_OUTPUT)
+    if tfplan_path.exists():
+        tfplan_path.unlink()
         logging.info(f"Removed {TFVARS_OUTPUT}")
     else:
         logging.warning(f"{TFVARS_OUTPUT} not found")
+    
+    # Remove config.json file
+    config_path = Path(CONFIG_FILE)
+    if config_path.exists():
+        config_path.unlink()
+        logging.info(f"Removed {CONFIG_FILE}")
+    else:
+        logging.warning(f"{CONFIG_FILE} not found")
 
 def main():
     if len(sys.argv) != 2:
