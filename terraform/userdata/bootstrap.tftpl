@@ -29,6 +29,7 @@ systemctl start ollama
 
 # Pull a default model
 echo "ollama pull" >> /home/opc/bootstrap.lock
+sleep 10
 ollama pull llama3.2:3b
 
 # Pre-load the model into memory for faster responses
